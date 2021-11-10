@@ -4,6 +4,8 @@
 [![Latest Unstable Version](https://poser.pugx.org/kalnoy/nestedset/v/unstable.svg)](https://packagist.org/packages/kalnoy/nestedset)
 [![License](https://poser.pugx.org/kalnoy/nestedset/license.svg)](https://packagist.org/packages/kalnoy/nestedset)
 
+**NOTE: THIS PACKAGE IS A FORK OF lazychaser/laravel-nestedset**
+
 This is a Laravel 4-8 package for working with trees in relational databases.
 
 *   **Laravel 5.7, 5.8, 6.0, 7.0, 8.0** is supported since v5
