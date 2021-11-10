@@ -112,27 +112,14 @@ abstract class BaseRelation extends Relation
     }
 
     /**
-     * @param EloquentBuilder $query
-     * @param EloquentBuilder $parent
-     * @param array $columns
-     *
-     * @return mixed
-     */
-    public function getRelationQuery(
-        EloquentBuilder $query, EloquentBuilder $parent,
-        $columns = [ '*' ]
-    ) {
-        return $this->getRelationExistenceQuery($query, $parent, $columns);
-    }
-
-    /**
      * Get a relationship join table hash.
      *
+     * @param  bool $incrementJoinCount
      * @return string
      */
-    public function getRelationCountHash()
+    public function getRelationCountHash($incrementJoinCount = true)
     {
-        return 'nested_set_'.self::$selfJoinCount++;
+        return 'nested_set_'.($incrementJoinCount ? static::$selfJoinCount++ : static::$selfJoinCount);
     }
 
     /**
@@ -154,9 +141,10 @@ abstract class BaseRelation extends Relation
      */
     public function addEagerConstraints(array $models)
     {
-        $model = reset($models);
-
-        $this->query = $model->newScopedQuery();
+        // The first model in the array is always the parent, so add the scope constraints based on that model.
+        // @link https://github.com/laravel/framework/pull/25240
+        // @link https://github.com/lazychaser/laravel-nestedset/issues/351
+        optional($models[0])->applyNestedSetScope($this->query);
 
         $this->query->whereNested(function (Builder $inner) use ($models) {
             // We will use this query in order to apply constraints to the
@@ -206,5 +194,17 @@ abstract class BaseRelation extends Relation
         }
 
         return $result;
+    }
+
+    /**
+     * Get the plain foreign key.
+     *
+     * @return mixed
+     */
+    public function getForeignKeyName()
+    {
+        // Return a stub value for relation
+        // resolvers which need this function.
+        return NestedSet::PARENT_ID;
     }
 }
